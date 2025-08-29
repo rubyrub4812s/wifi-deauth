@@ -12,7 +12,7 @@
 *Step-by-step network scanning and deauth attacks in a single CLI tool*
 
 </div>
-<image>src=image.png</image>
+<img>src="image.png"</img>
 ---
 
 ## 🎯 Overview
