@@ -78,7 +78,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/rubyrub4812s/wifi-deauth-supertool.git
+git clone https://github.com/rubyrub4812s/wifi-deauth.git
 cd wifi-deauth-supertool
 
 # Install dependencies
