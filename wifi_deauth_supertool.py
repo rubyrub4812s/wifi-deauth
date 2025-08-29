@@ -5,23 +5,18 @@ Author: Ruby Doss (@rubydoss)
 Instagram: @mr__dawxz
 
 A professional, all-in-one tool for WiFi penetration testing that guides users
-through monitor mode setup, network scanning, and deauthentication attacks.
+through network scanning and deauthentication attacks.
 
 FOR EDUCATIONAL AND AUTHORIZED TESTING ONLY!
 """
 
-import argparse
-import json
-import logging
 import os
 import signal
-import subprocess
 import sys
 import time
 from collections import defaultdict
 from datetime import datetime
-from pathlib import Path
-from threading import Thread, Event
+from threading import Thread
 
 try:
     from scapy.all import *
@@ -35,7 +30,6 @@ except ImportError as e:
     sys.exit(1)
 
 # Global variables
-current_interface = None
 monitor_interface = None
 scanning = False
 attacking = False
@@ -89,118 +83,79 @@ def signal_handler(signum, frame):
     print_status("\\nShutdown signal received...", "WARNING")
     attacking = False
     scanning = False
-    cleanup_and_exit()
-
-def cleanup_and_exit():
-    """Restore interfaces and exit cleanly"""
-    global monitor_interface, current_interface
-    
-    print_status("Cleaning up and restoring interfaces...", "INFO")
-    
-    if monitor_interface:
-        try:
-            # Restore original interface
-            subprocess.run(['airmon-ng', 'stop', monitor_interface], 
-                         capture_output=True, text=True)
-            print_status(f"Restored interface: {current_interface}", "SUCCESS")
-        except Exception as e:
-            print_status(f"Error restoring interface: {e}", "ERROR")
-    
-    # Restart NetworkManager
-    try:
-        subprocess.run(['systemctl', 'start', 'NetworkManager'], 
-                     capture_output=True, text=True)
-        print_status("NetworkManager restarted", "SUCCESS")
-    except Exception:
-        pass
-    
     print_status("Goodbye! 👋", "INFO")
     sys.exit(0)
 
-def get_wireless_interfaces():
-    """Get list of available wireless interfaces"""
-    try:
-        result = subprocess.run(['iwconfig'], capture_output=True, text=True, stderr=subprocess.STDOUT)
-        interfaces = []
-        
-        for line in result.stdout.split('\\n'):
-            if 'IEEE 802.11' in line:
-                interface = line.split()[0]
-                interfaces.append(interface)
-        
-        return interfaces
-    except Exception as e:
-        print_status(f"Error detecting wireless interfaces: {e}", "ERROR")
-        return []
+def show_monitor_mode_instructions():
+    """Show instructions for manually setting up monitor mode"""
+    instructions = f"""
+{Fore.CYAN}📋 MONITOR MODE SETUP INSTRUCTIONS:{Style.RESET_ALL}
 
-def select_interface():
-    """Let user select wireless interface"""
-    interfaces = get_wireless_interfaces()
+Please manually set up monitor mode before using this tool:
+
+{Fore.YELLOW}Step 1: Check your wireless interfaces{Style.RESET_ALL}
+iwconfig
+
+{Fore.YELLOW}Step 2: Stop interfering processes{Style.RESET_ALL}
+sudo systemctl stop NetworkManager
+sudo airmon-ng check kill
+
+{Fore.YELLOW}Step 3: Enable monitor mode{Style.RESET_ALL}
+sudo airmon-ng start wlan0
+{Fore.GREEN}(Replace 'wlan0' with your interface name){Style.RESET_ALL}
+
+{Fore.YELLOW}Step 4: Verify monitor mode is enabled{Style.RESET_ALL}
+iwconfig
+{Fore.GREEN}(Look for 'Mode:Monitor' - interface name usually becomes wlan0mon){Style.RESET_ALL}
+
+{Fore.YELLOW}Step 5: Run this tool again and enter your monitor interface name{Style.RESET_ALL}
+
+{Fore.RED}⚠️  Common monitor interface names: wlan0mon, wlan1mon, etc.{Style.RESET_ALL}
+"""
+    print(instructions)
+
+def get_monitor_interface():
+    """Get monitor interface from user input"""
+    global monitor_interface
     
-    if not interfaces:
-        print_status("No wireless interfaces found!", "ERROR")
-        print_status("Make sure you have a WiFi adapter connected", "INFO")
-        return None
-    
-    print(f"\\n{Fore.CYAN}📡 Available Wireless Interfaces:{Style.RESET_ALL}")
-    print("-" * 40)
-    
-    for i, interface in enumerate(interfaces, 1):
-        print(f"  {Fore.GREEN}[{i}]{Style.RESET_ALL} {interface}")
+    print(f"\\n{Fore.CYAN}📡 Monitor Mode Interface Setup{Style.RESET_ALL}")
+    print("=" * 50)
     
     while True:
         try:
-            choice = input(f"\\n{Fore.YELLOW}Select interface (1-{len(interfaces)}): {Style.RESET_ALL}")
-            choice = int(choice) - 1
+            interface = input(f"{Fore.YELLOW}Enter your monitor mode interface (e.g., wlan0mon): {Style.RESET_ALL}").strip()
             
-            if 0 <= choice < len(interfaces):
-                return interfaces[choice]
-            else:
-                print_status("Invalid choice! Please try again.", "ERROR")
-        except ValueError:
-            print_status("Please enter a valid number!", "ERROR")
+            if not interface:
+                print_status("Please enter a valid interface name!", "ERROR")
+                continue
+            
+            # Check if interface exists and is in monitor mode
+            try:
+                import subprocess
+                result = subprocess.run(['iwconfig', interface], capture_output=True, text=True)
+                
+                if 'No such device' in result.stderr:
+                    print_status(f"Interface '{interface}' not found!", "ERROR")
+                    print_status("Please check your interface name with: iwconfig", "INFO")
+                    continue
+                
+                if 'Mode:Monitor' not in result.stdout:
+                    print_status(f"Interface '{interface}' is not in monitor mode!", "ERROR")
+                    print_status("Please enable monitor mode first", "INFO")
+                    show_monitor_mode_instructions()
+                    continue
+                
+                monitor_interface = interface
+                print_status(f"Monitor interface verified: {interface}", "SUCCESS")
+                return interface
+                
+            except Exception as e:
+                print_status(f"Error checking interface: {e}", "ERROR")
+                continue
+                
         except KeyboardInterrupt:
-            cleanup_and_exit()
-
-def enable_monitor_mode(interface):
-    """Enable monitor mode on selected interface"""
-    global monitor_interface, current_interface
-    
-    current_interface = interface
-    print_status(f"Enabling monitor mode on {interface}...", "INFO")
-    
-    try:
-        # Stop NetworkManager to avoid conflicts
-        subprocess.run(['systemctl', 'stop', 'NetworkManager'], 
-                     capture_output=True, text=True)
-        
-        # Kill interfering processes
-        subprocess.run(['airmon-ng', 'check', 'kill'], 
-                     capture_output=True, text=True)
-        
-        # Enable monitor mode
-        result = subprocess.run(['airmon-ng', 'start', interface], 
-                              capture_output=True, text=True)
-        
-        # Find monitor interface name
-        if 'monitor mode enabled' in result.stdout.lower():
-            # Usually it's interfacemon (e.g., wlan0mon)
-            monitor_interface = f"{interface}mon"
-            
-            # Verify the interface exists
-            check_result = subprocess.run(['iwconfig', monitor_interface], 
-                                        capture_output=True, text=True)
-            
-            if 'Mode:Monitor' in check_result.stdout:
-                print_status(f"Monitor mode enabled successfully: {monitor_interface}", "SUCCESS")
-                return monitor_interface
-        
-        print_status("Failed to enable monitor mode", "ERROR")
-        return None
-        
-    except Exception as e:
-        print_status(f"Error enabling monitor mode: {e}", "ERROR")
-        return None
+            print_status("\\nExiting...", "INFO")
+            sys.exit(0)
 
 class NetworkScanner:
     """WiFi network scanner class"""
@@ -377,7 +332,8 @@ def select_target_network(networks):
         except ValueError:
             print_status("Please enter a valid number or 'q' to quit!", "ERROR")
         except KeyboardInterrupt:
-            cleanup_and_exit()
+            print_status("\\nExiting...", "INFO")
+            sys.exit(0)
 
 def confirm_attack(target):
     """Get user confirmation for attack"""
@@ -401,7 +357,8 @@ def confirm_attack(target):
                 print_status("Please enter 'y' for yes or 'n' for no", "ERROR")
                 
         except KeyboardInterrupt:
-            cleanup_and_exit()
+            print_status("\\nExiting...", "INFO")
+            sys.exit(0)
 
 def perform_deauth_attack(interface, target):
     """Perform continuous deauthentication attack"""
@@ -468,28 +425,29 @@ def main_menu():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
+    # Get monitor interface from user
+    print_status("Setting up monitor mode interface...", "INFO")
+    monitor_interface = get_monitor_interface()
+    
+    if not monitor_interface:
+        print_status("No valid monitor interface provided. Exiting.", "ERROR")
+        return
+    
     try:
         while True:
             print(f"\\n{Fore.CYAN}🚀 WiFi Deauth SuperTool - Main Menu{Style.RESET_ALL}")
-            print("=" * 40)
-            print(f"  {Fore.GREEN}[1]{Style.RESET_ALL} Setup Monitor Mode & Scan Networks")
-            print(f"  {Fore.GREEN}[2]{Style.RESET_ALL} Attack Selected Network") 
-            print(f"  {Fore.GREEN}[3]{Style.RESET_ALL} Exit & Cleanup")
+            print("=" * 45)
+            print(f"Monitor Interface: {Fore.GREEN}{monitor_interface}{Style.RESET_ALL}")
+            print("=" * 45)
+            print(f"  {Fore.GREEN}[1]{Style.RESET_ALL} Scan Networks & Launch Attack")
+            print(f"  {Fore.GREEN}[2]{Style.RESET_ALL} Change Monitor Interface") 
+            print(f"  {Fore.GREEN}[3]{Style.RESET_ALL} Show Monitor Mode Instructions")
+            print(f"  {Fore.GREEN}[4]{Style.RESET_ALL} Exit")
             
-            choice = input(f"\\n{Fore.YELLOW}Choose option (1-3): {Style.RESET_ALL}")
+            choice = input(f"\\n{Fore.YELLOW}Choose option (1-4): {Style.RESET_ALL}")
             
             if choice == "1":
-                # Interface selection and monitor mode
-                interface = select_interface()
-                if not interface:
-                    continue
-                
-                monitor_interface = enable_monitor_mode(interface)
-                if not monitor_interface:
-                    print_status("Failed to enable monitor mode. Please try again.", "ERROR")
-                    continue
-                
-                # Scan networks
+                # Scan networks and attack
                 scanner = NetworkScanner(monitor_interface)
                 networks = scanner.scan_networks(20)
                 
@@ -497,32 +455,30 @@ def main_menu():
                     target = select_target_network(networks)
                     if target and confirm_attack(target):
                         perform_deauth_attack(monitor_interface, target)
-                
+                else:
+                    print_status("No networks found. Try scanning again or check your interface.", "WARNING")
+            
             elif choice == "2":
-                if not monitor_interface:
-                    print_status("Please setup monitor mode first (option 1)", "ERROR")
-                    continue
-                
-                # Quick scan and attack
-                scanner = NetworkScanner(monitor_interface)
-                networks = scanner.scan_networks(15)
-                
-                if networks:
-                    target = select_target_network(networks)
-                    if target and confirm_attack(target):
-                        perform_deauth_attack(monitor_interface, target)
+                # Change monitor interface
+                monitor_interface = get_monitor_interface()
             
             elif choice == "3":
-                cleanup_and_exit()
+                # Show instructions
+                show_monitor_mode_instructions()
+            
+            elif choice == "4":
+                print_status("Goodbye! 👋", "INFO")
+                sys.exit(0)
             
             else:
-                print_status("Invalid choice! Please select 1, 2, or 3.", "ERROR")
+                print_status("Invalid choice! Please select 1, 2, 3, or 4.", "ERROR")
                 
     except KeyboardInterrupt:
-        cleanup_and_exit()
+        print_status("\\nExiting...", "INFO")
+        sys.exit(0)
     except Exception as e:
         print_status(f"Unexpected error: {e}", "ERROR")
-        cleanup_and_exit()
+        sys.exit(1)
 
 if __name__ == "__main__":
     main_menu()
